@@ -7,41 +7,50 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import ru.kryu.camera.ui.theme.CameraTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import ru.kryu.camera.presentation.details.DetailScreen
+import ru.kryu.camera.presentation.details.DetailViewModel
+import ru.kryu.camera.presentation.mainscreen.MainScreen
+import ru.kryu.camera.presentation.mainscreen.MainViewModel
+import ru.kryu.camera.presentation.ui.theme.CameraTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
             CameraTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    NavHost(navController, startDestination = "main") {
+                        composable("main") {
+                            val viewModel = remember { MainViewModel() }
+                            val state by remember { derivedStateOf { viewModel.uiState } }
+                            MainScreen(
+                                state,
+                                viewModel::processIntent,
+                                navController,
+                                Modifier.padding(innerPadding)
+                            )
+                        }
+                        composable("detail/{title}") { backStackEntry ->
+                            val title = backStackEntry.arguments?.getString("title") ?: ""
+                            val detailViewModel = remember { DetailViewModel() }
+                            DetailScreen(
+                                title,
+                                detailViewModel,
+                                Modifier.padding(innerPadding)
+                            )
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CameraTheme {
-        Greeting("Android")
     }
 }

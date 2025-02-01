@@ -1,4 +1,4 @@
-package ru.kryu.camera.ui.theme
+package ru.kryu.camera.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

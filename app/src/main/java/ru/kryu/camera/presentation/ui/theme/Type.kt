@@ -1,4 +1,4 @@
-package ru.kryu.camera.ui.theme
+package ru.kryu.camera.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
