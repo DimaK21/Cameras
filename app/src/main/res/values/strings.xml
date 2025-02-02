@@ -2,4 +2,5 @@
     <string name="app_name">Camera</string>
     <string name="try_again">Попробовать снова</string>
     <string name="error_occurred">Произошла ошибка</string>
+    <string name="refresh">Обновить</string>
 </resources>

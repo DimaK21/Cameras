@@ -11,31 +11,50 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.hilt.navigation.compose.hiltViewModel
+import ru.kryu.camera.R
 import ru.kryu.camera.domain.model.CardItem
 
 @Composable
 fun MainScreen(
-    state: UiState,
-    onIntent: (UiIntent) -> Unit,
-    navController: NavHostController,
-    modifier: Modifier
+    onItemClick: (String) -> Unit,
+    viewModel: MainViewModel = hiltViewModel(),
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        when (state) {
-            is UiState.Loading -> LoadingScreen()
-            is UiState.Success -> CardGrid(state.items) { item ->
-                navController.navigate("detail/${item.title}")
-            }
+    val state = viewModel.uiState.collectAsState()
 
-            is UiState.Error -> ErrorScreen { onIntent(UiIntent.Retry) }
+    Box(modifier = Modifier.fillMaxSize()) {
+        when {
+            state.value.isLoading -> LoadingScreen()
+            state.value.isError -> ErrorScreen { viewModel.processIntent(UiIntent.LoadData) }
+            !state.value.isLoading && !state.value.isError -> {
+                Box(
+                    contentAlignment = Alignment.TopCenter,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CardGrid(state.value.items) { item ->
+                        onItemClick(item.title)
+                    }
+                }
+                Button(
+                    onClick = { viewModel.processIntent(UiIntent.LoadData) },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.BottomCenter)
+                ) {
+                    Text(stringResource(R.string.refresh))
+                }
+            }
         }
     }
 }
@@ -50,7 +69,10 @@ fun CardGrid(items: List<CardItem>, onCardClick: (CardItem) -> Unit) {
 }
 
 @Composable
-fun CardItemView(item: CardItem, onCardClick: (CardItem) -> Unit) {
+fun CardItemView(
+    item: CardItem,
+    onCardClick: (CardItem) -> Unit
+) {
     Card(
         modifier = Modifier
             .padding(8.dp)

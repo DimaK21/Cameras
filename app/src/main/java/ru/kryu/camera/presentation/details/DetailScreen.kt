@@ -11,16 +11,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun DetailScreen(title: String, viewModel: DetailViewModel, modifier: Modifier) {
-    Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+fun DetailScreen(
+    title: String,
+    viewModel: DetailViewModel = hiltViewModel(),
+) {
+    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = title,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(16.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Streaming Video from: ${viewModel.videoUrl}") // Placeholder for video player
+        Text("Streaming Video from: ${viewModel.videoUrl}")
     }
 }
