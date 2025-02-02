@@ -11,6 +11,9 @@ import androidx.navigation.navArgument
 import ru.kryu.camera.presentation.details.DetailScreen
 import ru.kryu.camera.presentation.mainscreen.MainScreen
 
+const val DETAIL_ARG_TITLE_KEY = "title"
+const val DETAIL_ARG_ID_KEY = "id"
+
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -24,18 +27,27 @@ fun AppNavHost(
     ) {
         composable(route = Main.route) {
             MainScreen(
-                onItemClick = { title ->
-                    navController.navigate(Detail.detailRoute(title))
+                onItemClick = { title, id ->
+                    navController.navigate(Detail.detailRoute(title, id))
                 }
             )
         }
         composable(
             route = Detail.route,
-            arguments = listOf(navArgument("text") { type = NavType.StringType }),
+            arguments = listOf(
+                navArgument(DETAIL_ARG_TITLE_KEY) { type = NavType.StringType },
+                navArgument(DETAIL_ARG_ID_KEY) { type = NavType.StringType },
+            ),
         ) { backStackEntry ->
-            val text = backStackEntry.arguments?.getString("text")?.let { Uri.decode(it) } ?: ""
+            val title =
+                backStackEntry.arguments?.getString(DETAIL_ARG_TITLE_KEY)?.let { Uri.decode(it) }
+                    ?: ""
+            val id =
+                backStackEntry.arguments?.getString(DETAIL_ARG_ID_KEY)?.let { Uri.decode(it) }
+                    ?: ""
             DetailScreen(
-                title = text
+                title = title,
+                id = id
             )
         }
     }

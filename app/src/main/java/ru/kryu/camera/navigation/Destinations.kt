@@ -11,6 +11,6 @@ object Main : Destinations {
 }
 
 object Detail : Destinations {
-    override val route = "detail/{text}"
-    fun detailRoute(text: String) = "detail/${Uri.encode(text)}"
+    override val route = "detail/{$DETAIL_ARG_TITLE_KEY}/{$DETAIL_ARG_ID_KEY}"
+    fun detailRoute(title: String, id: String) = "detail/${Uri.encode(title)}/${Uri.encode(id)}"
 }

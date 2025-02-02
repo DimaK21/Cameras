@@ -1,5 +1,6 @@
 package ru.kryu.camera.presentation.mainscreen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,10 +16,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,10 +31,11 @@ import ru.kryu.camera.domain.model.CardItem
 
 @Composable
 fun MainScreen(
-    onItemClick: (String) -> Unit,
+    onItemClick: (String, String) -> Unit,
     viewModel: MainViewModel = hiltViewModel(),
 ) {
     val state = viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
@@ -43,7 +47,7 @@ fun MainScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     CardGrid(state.value.items) { item ->
-                        onItemClick(item.title)
+                        onItemClick(item.title, item.id)
                     }
                 }
                 Button(
@@ -55,6 +59,12 @@ fun MainScreen(
                     Text(stringResource(R.string.refresh))
                 }
             }
+        }
+    }
+
+    LaunchedEffect(state.value.errorMessage) {
+        if (state.value.errorMessage.isNotBlank()) {
+            Toast.makeText(context, state.value.errorMessage, Toast.LENGTH_SHORT).show()
         }
     }
 }

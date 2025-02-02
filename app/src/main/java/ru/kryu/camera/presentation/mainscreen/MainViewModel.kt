@@ -16,14 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
-    private val _uiState = MutableStateFlow(
-        UiState(
-            isLoading = false,
-            items = emptyList(),
-            isError = false
-        )
-    )
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(MainScreenState())
+    val uiState: StateFlow<MainScreenState> = _uiState.asStateFlow()
 
     init {
         loadData()
@@ -36,7 +30,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun loadData() {
-        _uiState.update { it.copy(isLoading = true) }
+        _uiState.update { it.copy(isLoading = true, errorMessage = "", isError = false) }
         viewModelScope.launch(Dispatchers.IO) {
             delay(1000) // Simulate network delay
             val success = (0..1).random() > 0 // Simulate random error
@@ -74,7 +68,15 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     )
                 }
             } else {
-                _uiState.update { it.copy(isLoading = false, isError = true) }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        isError = true,
+                        errorMessage = "Error"
+                    )
+                }
+                delay(50L)
+                _uiState.update { it.copy(errorMessage = "") }
             }
         }
     }
