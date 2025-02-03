@@ -68,4 +68,6 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
 }

@@ -1,6 +1,5 @@
 package ru.kryu.camera.presentation.details
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,22 +8,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
+import ru.kryu.camera.R
+import ru.kryu.camera.data.network.NetworkParams.BASE_URL
+import ru.kryu.camera.data.network.NetworkParams.LOGIN
 
 @Composable
 fun DetailScreen(
     title: String,
     id: String,
-    viewModel: DetailViewModel = hiltViewModel(),
 ) {
-    val state = viewModel.uiState.collectAsState()
-    val context = LocalContext.current
+    val resource = "%s/mobile?login=%s&channelid=%s&resolutiony=480&sound=on"
+    val mjpegUrl = String.format(resource, BASE_URL, LOGIN, id)
 
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
@@ -33,12 +37,30 @@ fun DetailScreen(
             modifier = Modifier.padding(16.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Streaming Video from: ${state.value.videoId}")
+        Text(stringResource(R.string.streaming_video_from, id))
+        Spacer(modifier = Modifier.height(8.dp))
+        MjpegPlayer(mjpegUrl)
     }
+}
 
-    LaunchedEffect(state.value.errorMessage) {
-        if (state.value.errorMessage.isNotBlank()) {
-            Toast.makeText(context, state.value.errorMessage, Toast.LENGTH_SHORT).show()
+@Composable
+fun MjpegPlayer(mjpegUrl: String) {
+    val context = LocalContext.current
+    val exoPlayer = remember {
+        ExoPlayer.Builder(context).build().apply {
+            val mediaItem = MediaItem.fromUri(mjpegUrl)
+            setMediaItem(mediaItem)
+            prepare()
+            playWhenReady = true
         }
     }
+
+    AndroidView(
+        factory = { ctx ->
+            PlayerView(ctx).apply {
+                player = exoPlayer
+            }
+        },
+        modifier = Modifier.fillMaxSize()
+    )
 }
