@@ -33,8 +33,8 @@ class MainViewModel @Inject constructor(
     }
 
     private fun loadData() {
-        _uiState.update { it.copy(isLoading = true, errorMessage = "", isError = false) }
         viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true, errorMessage = "", isError = false) }
             camerasRepository.getCameras().collect { resource ->
                 if (resource is Resource.Success) {
                     _uiState.update {

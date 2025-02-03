@@ -1,7 +1,6 @@
 package ru.kryu.camera.data.network
 
 import android.util.Log
-import ru.kryu.camera.data.network.NetworkParams.CODE_NO_CONTENT
 import ru.kryu.camera.data.network.NetworkParams.LOGIN
 import ru.kryu.camera.data.network.NetworkParams.RESPONSE_TYPE
 import javax.inject.Inject

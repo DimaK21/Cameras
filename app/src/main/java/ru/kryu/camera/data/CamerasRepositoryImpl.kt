@@ -18,15 +18,15 @@ class CamerasRepositoryImpl @Inject constructor(
         val response = networkClient.getServerInfo()
         when {
             response is ServerInfoDto -> {
-                Resource.Success(response.toCameraItemList())
+                emit(Resource.Success(response.toCameraItemList()))
             }
 
             response.resultCode == CODE_SUCCESS -> {
-                Resource.Success(emptyList<CameraItem>())
+                emit(Resource.Success(emptyList()))
             }
 
             else -> {
-                Resource.Error(message = "${response.resultCode} ${response.text}")
+                emit(Resource.Error(message = "${response.resultCode} ${response.text}"))
             }
         }
     }
