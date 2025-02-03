@@ -1,7 +1,6 @@
 package ru.kryu.camera.presentation.mainscreen
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,14 +19,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil3.compose.AsyncImage
 import ru.kryu.camera.R
-import ru.kryu.camera.domain.model.CardItem
+import ru.kryu.camera.domain.model.CameraItem
 
 @Composable
 fun MainScreen(
@@ -47,7 +48,7 @@ fun MainScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     CardGrid(state.value.items) { item ->
-                        onItemClick(item.title, item.id)
+                        onItemClick(item.name, item.id)
                     }
                 }
                 Button(
@@ -70,7 +71,7 @@ fun MainScreen(
 }
 
 @Composable
-fun CardGrid(items: List<CardItem>, onCardClick: (CardItem) -> Unit) {
+fun CardGrid(items: List<CameraItem>, onCardClick: (CameraItem) -> Unit) {
     LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = Modifier.fillMaxSize()) {
         items(items.size) { index ->
             CardItemView(items[index], onCardClick)
@@ -80,8 +81,8 @@ fun CardGrid(items: List<CardItem>, onCardClick: (CardItem) -> Unit) {
 
 @Composable
 fun CardItemView(
-    item: CardItem,
-    onCardClick: (CardItem) -> Unit
+    item: CameraItem,
+    onCardClick: (CameraItem) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -90,14 +91,22 @@ fun CardItemView(
             .clickable { onCardClick(item) }
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            val image: Painter = painterResource(id = item.imageRes)
-            Image(
-                painter = image,
-                contentDescription = item.title,
-                modifier = Modifier.fillMaxWidth()
+            AsyncImage(
+                model = item.image,
+                contentDescription = item.name,
+                contentScale = ContentScale.Fit,
+                placeholder = painterResource(R.drawable.baseline_image_24),
+                error = painterResource(R.drawable.baseline_image_24),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(item.title)
+            Text(
+                item.name,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
