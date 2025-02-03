@@ -1,11 +1,12 @@
 package ru.kryu.camera.data.network.dto
 
-
 import com.google.gson.annotations.SerializedName
+import ru.kryu.camera.data.network.Response
 
+// закомментировал лишние поля
 data class ServerInfoDto(
-    @SerializedName("Id")
-    val id: String?,
+//    @SerializedName("Id")
+//    val id: String?,
 //    @SerializedName("SenderId")
 //    val senderId: String?,
 //    @SerializedName("RevNum")
@@ -38,7 +39,7 @@ data class ServerInfoDto(
 //    val worldMapConfig: Any?,
 //    @SerializedName("UseTimeZones")
 //    val useTimeZones: Boolean?
-) {
+) : Response() {
     data class Server(
         @SerializedName("Id")
         val id: String?,
