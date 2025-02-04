@@ -11,12 +11,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.kryu.camera.domain.CamerasRepository
+import ru.kryu.camera.domain.ImageRepository
 import ru.kryu.camera.util.Resource
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val camerasRepository: CamerasRepository,
+    private val imageRepository: ImageRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainScreenState())
@@ -44,6 +46,15 @@ class MainViewModel @Inject constructor(
                             isError = false,
                             items = resource.data ?: emptyList()
                         )
+                    }
+                    _uiState.value.items.forEachIndexed() { index, item ->
+                        viewModelScope.launch {
+                            val byteArray = imageRepository.fetchImage(item.id)
+                            _uiState.update { state ->
+                                state.items[index].image = byteArray
+                                state
+                            }
+                        }
                     }
                 } else {
                     _uiState.update {

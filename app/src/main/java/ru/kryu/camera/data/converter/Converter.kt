@@ -8,6 +8,6 @@ fun ServerInfoDto.toCameraItemList() = channels?.map {
     CameraItem(
         id = it?.id ?: "",
         name = it?.name ?: "",
-        image = String.format(ONE_FRAME_URL_FORMAT, it?.id ?: "")
+        image = null //String.format(ONE_FRAME_URL_FORMAT, it?.id ?: "")
     )
 } ?: emptyList()

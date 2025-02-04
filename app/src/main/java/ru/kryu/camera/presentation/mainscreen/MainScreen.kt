@@ -1,6 +1,8 @@
 package ru.kryu.camera.presentation.mainscreen
 
+import android.graphics.BitmapFactory
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -26,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil3.compose.AsyncImage
 import ru.kryu.camera.R
 import ru.kryu.camera.domain.model.CameraItem
 
@@ -91,16 +93,26 @@ fun CardItemView(
             .clickable { onCardClick(item) }
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            AsyncImage(
-                model = item.image,
-                contentDescription = item.name,
-                contentScale = ContentScale.Fit,
-                placeholder = painterResource(R.drawable.baseline_image_24),
-                error = painterResource(R.drawable.baseline_image_24),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-            )
+            if (item.image != null) {
+                val bitmap = BitmapFactory.decodeByteArray(item.image, 0, item.image?.size ?: 0)
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = item.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                )
+            } else {
+                Image(
+                    painter = painterResource(R.drawable.baseline_image_24),
+                    contentDescription = item.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 item.name,

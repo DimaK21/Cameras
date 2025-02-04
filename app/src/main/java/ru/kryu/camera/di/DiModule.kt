@@ -7,11 +7,13 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.kryu.camera.data.CamerasRepositoryImpl
+import ru.kryu.camera.data.ImageRepositoryImpl
 import ru.kryu.camera.data.network.DemoApi
 import ru.kryu.camera.data.network.NetworkClient
 import ru.kryu.camera.data.network.NetworkParams.BASE_URL
 import ru.kryu.camera.data.network.RetrofitNetworkClient
 import ru.kryu.camera.domain.CamerasRepository
+import ru.kryu.camera.domain.ImageRepository
 import javax.inject.Singleton
 
 @Module
@@ -39,4 +41,9 @@ class DiModule {
     @Singleton
     fun provideCamerasRepository(networkClient: NetworkClient): CamerasRepository =
         CamerasRepositoryImpl(networkClient)
+
+    @Provides
+    @Singleton
+    fun provideImageRepository(networkClient: NetworkClient): ImageRepository =
+        ImageRepositoryImpl(networkClient)
 }
