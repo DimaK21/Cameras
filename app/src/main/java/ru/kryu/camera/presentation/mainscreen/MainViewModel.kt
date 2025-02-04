@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.kryu.camera.domain.CamerasRepository
 import ru.kryu.camera.domain.ImageRepository
 import ru.kryu.camera.util.Resource
@@ -37,22 +38,30 @@ class MainViewModel @Inject constructor(
     private fun loadData() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isLoading = true, errorMessage = "", isError = false) }
+
             camerasRepository.getCameras().collect { resource ->
                 if (resource is Resource.Success) {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = "",
-                            isError = false,
-                            items = resource.data ?: emptyList()
-                        )
+                    val items = resource.data ?: emptyList()
+
+                    withContext(Dispatchers.Main) {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "",
+                                isError = false,
+                                items = items
+                            )
+                        }
                     }
-                    _uiState.value.items.forEachIndexed() { index, item ->
-                        viewModelScope.launch {
-                            val byteArray = imageRepository.fetchImage(item.id)
-                            _uiState.update { state ->
-                                state.items[index].image = byteArray
-                                state
+                    items.forEach { camera ->
+                        viewModelScope.launch(Dispatchers.IO) {
+                            val image = imageRepository.fetchImage(camera.id)
+
+                            _uiState.update { currentState ->
+                                val updatedItems = currentState.items.map { item ->
+                                    if (item.id == camera.id) item.copy(image = image) else item
+                                }
+                                currentState.copy(items = updatedItems)
                             }
                         }
                     }
