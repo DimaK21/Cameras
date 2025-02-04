@@ -27,7 +27,7 @@ fun DetailScreen(
     title: String,
     id: String,
 ) {
-    val resource = "%s/mobile?login=%s&channelid=%s&resolutiony=480&sound=on"
+    val resource = "%s/video?login=%s&channelid=%s&sound=on"
     val mjpegUrl = String.format(resource, BASE_URL, LOGIN, id)
 
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
