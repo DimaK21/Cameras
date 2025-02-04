@@ -8,16 +8,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
+import com.longdo.mjpegviewer.MjpegView
 import ru.kryu.camera.R
 import ru.kryu.camera.data.network.NetworkParams.BASE_URL
 import ru.kryu.camera.data.network.NetworkParams.LOGIN
@@ -27,7 +23,7 @@ fun DetailScreen(
     title: String,
     id: String,
 ) {
-    val resource = "%s/video?login=%s&channelid=%s&streamtype=Main"
+    val resource = "%s/mobile?login=%s&channelid=%s"
     val videoUrl = String.format(resource, BASE_URL, LOGIN, id)
 
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -45,22 +41,16 @@ fun DetailScreen(
 
 @Composable
 fun VideoPlayer(videoUrl: String) {
-    val context = LocalContext.current
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            val mediaItem = MediaItem.fromUri(videoUrl)
-            setMediaItem(mediaItem)
-            prepare()
-            playWhenReady = true
-        }
-    }
-
     AndroidView(
+        modifier = Modifier.fillMaxSize(),
         factory = { ctx ->
-            PlayerView(ctx).apply {
-                player = exoPlayer
+            MjpegView(ctx).apply {
+                mode = MjpegView.MODE_FIT_WIDTH
+                isAdjustHeight = true
+                supportPinchZoomAndPan = true
+                setUrl(videoUrl)
+                startStream()
             }
-        },
-        modifier = Modifier.fillMaxSize()
+        }
     )
 }
